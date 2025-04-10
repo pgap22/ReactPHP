@@ -1,11 +1,12 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require './vendor/autoload.php';
 
 use App\Router;
 use React\EventLoop\Loop;
 use React\Http\HttpServer;
 use React\Socket\SocketServer;
 use Psr\Http\Message\ServerRequestInterface;
+use React\Http\Message\Response;
 
 $loop = Loop::get();
 
