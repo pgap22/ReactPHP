@@ -1,0 +1,143 @@
+/* Estilos generales tipo Facebook */
+:root {
+    --fb-blue: #1877f2;
+    --fb-white: #ffffff;
+    --fb-light-gray: #f0f2f5;
+    --fb-dark-gray: #1c1e21;
+    --fb-green: #42b72a;
+    --fb-text-gray: #65676b;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--fb-light-gray);
+    color: var(--fb-dark-gray);
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .header {
+    background-color: var(--fb-blue);
+    color: var(--fb-white);
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    text-align: center;
+  }
+  
+  .welcome-message {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  
+  .fb-button {
+    background-color: var(--fb-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .fb-button:hover {
+    background-color: #166fe5;
+  }
+  
+  .fb-button.green {
+    background-color: var(--fb-green);
+  }
+  
+  .fb-button.green:hover {
+    background-color: #36a420;
+  }
+  
+  /* Estilos específicos para la página de contacto */
+  .contact-form {
+    background-color: var(--fb-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 500px;
+    margin: 20px auto;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--fb-text-gray);
+    font-weight: 600;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dddfe2;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  .form-group textarea {
+    min-height: 100px;
+  }
+  
+  /* Estilos para la página de datos */
+  .data-container {
+    background-color: var(--fb-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+  }
+  
+  .data-item {
+    border-bottom: 1px solid #dddfe2;
+    padding: 15px 0;
+  }
+  
+  .data-item:last-child {
+    border-bottom: none;
+  }
+  
+  .data-item h3 {
+    margin: 0 0 5px 0;
+    color: var(--fb-dark-gray);
+  }
+  
+  .data-item p {
+    margin: 0;
+    color: var(--fb-text-gray);
+  }

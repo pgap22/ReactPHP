@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD con ReactPHP y MySQL</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-blue-600">Gestión de Entradas</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Agregar Nueva Entrada</h2>
+            <form id="create-form" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700">Título</label>
+                    <input type="text" id="title" name="title" required 
+                        class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-gray-700">Descripción</label>
+                    <textarea id="description" name="description" required
+                        class="w-full px-4 py-2 border rounded-lg"></textarea>
+                </div>
+                <button type="submit" 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                    Guardar Entrada
+                </button>
+                <a href="/" class="inline-block mt-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Volver</a>
+            </form>
+            <div id="message" class="mt-4 hidden"></div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Lista de Entradas</h2>
+            <div id="entries-list" class="space-y-4">
+                <div class="text-center py-4">Cargando entradas...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar mensajes de estado
+        function showMessage(text, isError = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = isError ? 
+                'mt-4 p-3 bg-red-100 text-red-700 rounded' : 
+                'mt-4 p-3 bg-green-100 text-green-700 rounded';
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Cargar entradas desde la API
+        async function loadEntries() {
+            try {
+                const response = await fetch('/api/entries');
+                
+                if (!response.ok) {
+                    // Intenta obtener el mensaje de error como JSON o como texto
+                    const errorText = await response.text();
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        throw new Error(errorData.error || errorData.message || `Error ${response.status}`);
+                    } catch {
+                        throw new Error(errorText || `Error ${response.status}`);
+                    }
+                }
+                
+                const entries = await response.json();
+                renderEntries(entries);
+                
+            } catch (error) {
+                console.error('Error al cargar entradas:', error);
+                document.getElementById('entries-list').innerHTML = `
+                    <div class="text-red-500 p-4">
+                        Error al cargar datos: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Renderizar las entradas en la tabla
+        function renderEntries(entries) {
+            const entriesList = document.getElementById('entries-list');
+            
+            if (!entries || entries.length === 0) {
+                entriesList.innerHTML = '<div class="text-center py-4">No hay entradas disponibles</div>';
+                return;
+            }
+            
+            entriesList.innerHTML = entries.map(entry => `
+                <div class="border-b pb-4" data-id="${entry.id}">
+                    <h3 class="font-bold text-lg">${entry.title}</h3>
+                    <p class="text-gray-600 mb-2">${entry.description}</p>
+                    <div class="flex space-x-2">
+                        <button onclick="editEntry('${entry.id}')" 
+                            class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">
+                            Editar
+                        </button>
+                        <button onclick="deleteEntry('${entry.id}')" 
+                            class="bg-red-500 text-white px-3 py-1 rounded text-sm">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('create-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const titleInput = document.getElementById('title');
+            const descInput = document.getElementById('description');
+            const formData = {
+                title: titleInput.value,
+                description: descInput.value
+            };
+            
+            try {
+                const response = await fetch('/api/entries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Error al crear entrada');
+                }
+                
+                const result = await response.json();
+                showMessage(`Entrada creada con ID: ${result.id}`);
+                titleInput.value = '';
+                descInput.value = '';
+                loadEntries();
+                
+            } catch (error) {
+                console.error('Error al crear entrada:', error);
+                showMessage('Error al crear entrada: ' + error.message, true);
+            }
+        });
+
+        // Editar una entrada
+        async function editEntry(id) {
+            const newTitle = prompt('Nuevo título:');
+            if (newTitle) {
+                try {
+                    const response = await fetch(`/api/entries/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title: newTitle })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Error al actualizar');
+                    }
+                    
+                    showMessage('Entrada actualizada correctamente');
+                    loadEntries();
+                } catch (error) {
+                    console.error('Error al editar:', error);
+                    showMessage('Error: ' + error.message, true);
+                }
+            }
+        }
+
+        // Eliminar una entrada
+        async function deleteEntry(id) {
+            if (confirm('¿Estás seguro de eliminar esta entrada?')) {
+                try {
+                    const response = await fetch(`/api/entries/${id}`, { 
+                        method: 'DELETE' 
+                    });
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Error al eliminar');
+                    }
+                    
+                    showMessage('Entrada eliminada correctamente');
+                    loadEntries();
+                } catch (error) {
+                    console.error('Error al eliminar:', error);
+                    showMessage('Error: ' + error.message, true);
+                }
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', loadEntries);
+    </script>
+</body>
+</html>
