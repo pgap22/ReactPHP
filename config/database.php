@@ -2,7 +2,7 @@
 return [
     'host' => 'localhost',
     'dbname' => 'reactphp_crud', 
-    'user' => 'user',   
-    'password' => '', 
+    'user' => 'root',   
+    'password' => 'root', 
     'charset' => 'utf8mb4'
 ];
