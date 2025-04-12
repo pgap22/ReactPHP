@@ -12,7 +12,7 @@ class Connection
 
     private function __construct()
     {
-        $config = include __DIR__ . '/../../config/database.php';
+        $config = include  getcwd(). '/config/database.php';
         $factory = new Factory(Loop::get());
         
         $dsn = "{$config['user']}:{$config['password']}@{$config['host']}/{$config['dbname']}?charset={$config['charset']}";

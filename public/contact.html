@@ -9,11 +9,10 @@
 <body>
     <header class="header">
         <div class="container header-content">
-            <div class="logo">ReactPHP App</div>
+            <div class="logo">Empresa App</div>
             <a href="/" class="fb-button">Volver al Inicio</a>
         </div>
     </header>
-
     <main class="container">
         <h1>Formulario de Contacto</h1>
         
@@ -38,10 +37,52 @@
     </main>
 
     <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            alert('Mensaje enviado (simulado). En una implementación real, esto se enviaría al servidor.');
-            this.reset();
+
+            // Obtener el botón y mostrar el estado de carga
+            const submitButton = document.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+
+            // Obtener los datos del formulario
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Crear el cuerpo de la solicitud
+            const requestBody = {
+                to: email,
+                subject: `Mensaje de ${name}`,
+                message: message
+            };
+
+            try {
+                // Enviar la solicitud al servidor
+                const response = await fetch('/api/email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                // Manejar la respuesta del servidor
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message);
+                    this.reset();
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error || 'No se pudo enviar el mensaje'}`);
+                }
+            } catch (err) {
+                alert('Error al enviar la solicitud: ' + err.message);
+            } finally {
+                // Restaurar el botón a su estado original
+                submitButton.disabled = false;
+                submitButton.textContent = 'Enviar Mensaje';
+            }
         });
     </script>
 </body>
